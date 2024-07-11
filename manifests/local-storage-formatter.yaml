@@ -17,7 +17,7 @@ spec:
         spec:
             serviceAccountName: local-storage-admin
             containers:
-                - image: "ghcr.io/creitmeier701x/az-local-pvc-master:v1.0.3"
+                - image: "ghcr.io/creitmeier701x/az-local-pvc-master:v1.0.4"
                   imagePullPolicy: "Always"
                   name: formatter
                   securityContext:

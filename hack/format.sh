@@ -32,7 +32,7 @@ case $SSD_NVME_DEVICE_COUNT in
   exit 1
   ;;
 "1")
-  mkfs.xfs $SSD_NVME_DEVICE_LIST
+  mkfs.xfs $SSD_NVME_DEVICE_LIST -f
   DEVICE=$SSD_NVME_DEVICE_LIST
   ;;
 *)
