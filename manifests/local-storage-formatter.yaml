@@ -2,40 +2,41 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: local-storage-formatter
-  namespace: default
-  labels:
-    app: local-storage-formatter
-spec:
-  selector:
-    matchLabels:
-      app: local-storage-formatter 
-  template:
-    metadata:
-      labels:
+    name: local-storage-formatter
+    namespace: default
+    labels:
         app: local-storage-formatter
-    spec:
-      serviceAccountName: local-storage-admin
-      containers:
-      - image: "docker.io/alexeldeib/az-local-pvc:latest"
-        imagePullPolicy: "Always"
-        name: formatter
-        securityContext:
-          privileged: true
-        volumeMounts:           
-        - mountPath:  /pv-disks 
-          name: pv-disks
-          mountPropagation: "Bidirectional" 
-        - mountPath: /sys
-          name: sys
-      volumes:
-        - name: provisioner-dev
-          hostPath:
-            path: /dev
-        - name: pv-disks
-          hostPath:
-            path: /pv-disks
-        - name: sys
-          hostPath:
-            path: /sys
+spec:
+    selector:
+        matchLabels:
+            app: local-storage-formatter
+    template:
+        metadata:
+            labels:
+                app: local-storage-formatter
+        spec:
+            serviceAccountName: local-storage-admin
+            containers:
+                - image: "ghcr.io/creitmeier701x/az-local-pvc-master:v1.0.0"
+                  imagePullPolicy: "Always"
+                  name: formatter
+                  securityContext:
+                      privileged: true
+                  volumeMounts:
+                      - mountPath: /pv-disks
+                        name: pv-disks
+                        mountPropagation: "Bidirectional"
+                      - mountPath: /sys
+                        name: sys
+            volumes:
+                - name: provisioner-dev
+                  hostPath:
+                      path: /dev
+                - name: pv-disks
+                  hostPath:
+                      path: /pv-disks
+                - name: sys
+                  hostPath:
+                      path: /sys
 ---
+
