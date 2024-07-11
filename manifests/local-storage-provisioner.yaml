@@ -1,0 +1,66 @@
+---
+# Source: provisioner/templates/provisioner.yaml
+ 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: local-storage-config 
+  namespace: default 
+data:
+  storageClassMap: |     
+    fast-disks:
+       hostDir: /pv-disks
+       mountDir: /pv-disks 
+       blockCleanerCommand:
+         - "/scripts/shred.sh"
+         - "2"
+       setPVOwnerRef: true
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: local-storage-provisioner
+  namespace: default
+  labels:
+    app: local-storage-provisioner
+spec:
+  selector:
+    matchLabels:
+      app: local-storage-provisioner 
+  template:
+    metadata:
+      labels:
+        app: local-storage-provisioner
+    spec:
+      serviceAccountName: local-storage-admin
+      containers:
+      - image: "quay.io/external_storage/local-volume-provisioner:v2.1.0"
+        imagePullPolicy: "Always"
+        name: provisioner 
+        securityContext:
+          privileged: true
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+          - mountPath: /etc/provisioner/config 
+            name: provisioner-config
+            readOnly: true
+          - mountPath: /dev
+            name: provisioner-dev
+          - mountPath:  /pv-disks
+            name: pv-disks
+            mountPropagation: "HostToContainer" 
+      volumes:
+        - name: provisioner-config
+          configMap:
+            name: local-storage-config
+        - name: provisioner-dev
+          hostPath:
+            path: /dev
+        - name: pv-disks
+          hostPath:
+            path: /pv-disks
+---
