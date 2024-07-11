@@ -1,5 +1,7 @@
 FROM debian:stretch-slim
-
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i s/security.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i s/stretch-updates/stretch/g /etc/apt/sources.list
 RUN  apt-get update && apt-get -y install nvme-cli mdadm && apt-get -y clean && apt-get -y autoremove
 COPY hack/format.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/format.sh
